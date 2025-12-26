@@ -46,12 +46,10 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, onAuthNavigate, currentView
 
   const navLinks = [
     { name: 'Home', action: () => onNavigate('home'), id: 'home' },
-    // Updated Services action to navigate to new page
     { name: 'Services', action: () => onNavigate('services'), id: 'services' },
     { name: 'Consultation', action: () => onNavigate('consultation'), id: 'consultation' },
     { name: 'Products', action: () => onNavigate('shop'), id: 'shop' },
-    // "Learning" is shown in main nav if logged in, but also available in dropdown
-    ...(user ? [{ name: 'Learning', action: () => onNavigate('lms'), id: 'lms' }] : []),
+    { name: 'Learning', action: () => onNavigate('lms'), id: 'lms' }, // Visible to everyone
     { name: 'Contact', action: () => onNavigate('contact'), id: 'contact' },
   ];
 
@@ -65,213 +63,151 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, onAuthNavigate, currentView
             <div className="flex items-center space-x-3 group cursor-pointer relative z-50" onClick={() => { onNavigate('home'); setIsOpen(false); }}>
               <div className="relative w-8 h-8 md:w-10 md:h-10 flex items-center justify-center">
                   <div className="absolute inset-0 border-[1.5px] border-aura-gold rotate-45 transition-transform duration-700 group-hover:rotate-90"></div>
-                  <div className="absolute inset-0 border-[1.5px] border-rich-crimson/50 rotate-12 transition-transform duration-700 group-hover:-rotate-12"></div>
-                  <Hexagon size={18} className="text-aura-gold fill-aura-gold/20 md:w-5 md:h-5" />
+                  <div className="absolute inset-0 border-[1.5px] border-cosmic-blue/30 rotate-12 transition-transform duration-700 group-hover:-rotate-12"></div>
+                  <Hexagon size={16} className="text-rich-crimson relative z-10" fill="currentColor" />
               </div>
               <div className="flex flex-col">
-                  <span className="font-display text-xl md:text-2xl font-bold text-cosmic-blue tracking-widest leading-none">
-                  DIGITAL<span className="text-rich-crimson">VASTU</span>
+                  <span className={`font-display text-xl md:text-2xl font-bold tracking-[0.15em] leading-none transition-colors ${scrolled || isOpen ? 'text-cosmic-blue' : 'text-cosmic-blue'}`}>
+                      DIGITAL<span className="text-rich-crimson">VASTU</span>
                   </span>
-                  <span className="text-[0.5rem] md:text-[0.6rem] tracking-[0.3em] text-aura-gold uppercase font-serif font-bold">Sacred Geometry</span>
               </div>
             </div>
 
-            {/* Desktop Nav - SWITCHED TO XL BREAKPOINT to prevent overcrowding */}
-            <div className="hidden xl:flex items-center space-x-6">
+            {/* Desktop Menu */}
+            <div className="hidden lg:flex items-center space-x-8">
               {navLinks.map((link) => (
-                <button 
-                  key={link.name} 
-                  onClick={() => { link.action(); setIsOpen(false); }} 
-                  className={`font-sans font-normal text-[13px] uppercase tracking-wider transition-colors relative group ${currentView === link.id ? 'text-vibrant-orange' : 'text-cosmic-blue'} hover:text-vibrant-orange`}
+                <button
+                  key={link.name}
+                  onClick={link.action}
+                  className={`text-sm font-bold uppercase tracking-widest transition-all hover:text-rich-crimson ${currentView === link.id ? 'text-rich-crimson' : 'text-slate-600'}`}
                 >
-                  <span>{link.name}</span>
-                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-vibrant-orange transition-all duration-300 ${currentView === link.id ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                  {link.name}
                 </button>
               ))}
-              
-              <div className="h-6 w-px bg-earth-beige mx-2"></div>
-              
-              <div className="flex items-center space-x-4">
-                  {/* Cart Icon - ONLY VISIBLE IF LOGGED IN */}
-                  {user && (
-                    <button 
-                        onClick={() => onNavigate('cart')}
-                        className="relative p-2 text-cosmic-blue hover:text-vibrant-orange transition-colors group"
-                        title="Cart"
-                    >
-                        <ShoppingCart size={20} className="group-hover:scale-110 transition-transform" />
-                        {cartCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-rich-crimson text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold animate-pulse">
-                                {cartCount}
-                            </span>
-                        )}
-                    </button>
-                  )}
+            </div>
 
-                  {user ? (
-                    // PROFILE DROPDOWN (Replaces cluttered buttons)
+            {/* Right Actions */}
+            <div className="hidden lg:flex items-center space-x-6">
+                {/* Cart Icon */}
+                <button 
+                  onClick={() => onNavigate('cart')}
+                  className="relative group p-2"
+                >
+                    <ShoppingCart className="w-5 h-5 text-cosmic-blue group-hover:text-rich-crimson transition-colors" />
+                    {cartCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-rich-crimson text-white text-[9px] font-bold flex items-center justify-center rounded-full">
+                            {cartCount}
+                        </span>
+                    )}
+                </button>
+
+                {user ? (
                     <div className="relative" ref={profileRef}>
                         <button 
-                          onClick={() => setIsProfileOpen(!isProfileOpen)}
-                          className={`flex items-center space-x-2 pl-2 pr-3 py-1.5 rounded-full border transition-all duration-300 ${isProfileOpen ? 'bg-sacred-cream border-aura-gold' : 'bg-white border-earth-beige/50 hover:border-aura-gold/50'}`}
+                            onClick={() => setIsProfileOpen(!isProfileOpen)}
+                            className="flex items-center gap-3 px-4 py-2 rounded-full bg-white border border-earth-beige/50 hover:border-aura-gold transition-all shadow-sm group"
                         >
-                            <div className="w-8 h-8 rounded-full bg-cosmic-blue text-white flex items-center justify-center font-display font-bold">
-                                {user.fullName.charAt(0)}
+                             <div className="w-8 h-8 rounded-full bg-sacred-cream flex items-center justify-center text-aura-gold group-hover:bg-aura-gold group-hover:text-white transition-colors">
+                                <UserIcon size={16} />
                             </div>
-                            <span className="text-xs font-bold text-cosmic-blue uppercase tracking-wider max-w-[80px] truncate">
-                                {user.fullName.split(' ')[0]}
-                            </span>
-                            <ChevronDown size={14} className={`text-mystic-indigo transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} />
+                            <span className="text-xs font-bold text-cosmic-blue tracking-wide uppercase max-w-[100px] truncate">{user.fullName.split(' ')[0]}</span>
+                            <ChevronDown size={14} className={`text-slate-400 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
                         </button>
 
-                        {/* Dropdown Menu */}
+                        {/* Profile Dropdown */}
                         {isProfileOpen && (
-                            <div className="absolute right-0 top-full mt-3 w-64 bg-white/95 backdrop-blur-xl rounded-2xl border border-earth-beige shadow-xl overflow-hidden animate-fade-in origin-top-right z-50">
-                                <div className="p-4 bg-sacred-cream/50 border-b border-earth-beige/30">
-                                    <p className="text-xs font-bold uppercase tracking-widest text-mystic-indigo/50 mb-1">Signed in as</p>
-                                    <p className="text-sm font-bold text-cosmic-blue truncate">{user.email}</p>
-                                </div>
-                                <div className="p-2">
-                                    <button 
-                                        onClick={() => { onNavigate('dashboard'); setIsProfileOpen(false); }}
-                                        className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-sacred-cream text-left transition-colors group"
-                                    >
-                                        <LayoutDashboard size={18} className="text-mystic-indigo group-hover:text-vibrant-orange" />
-                                        <span className="text-sm font-medium text-cosmic-blue">Dashboard</span>
-                                    </button>
-                                    
-                                    <button 
-                                        onClick={() => { onNavigate('lms'); setIsProfileOpen(false); }}
-                                        className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-sacred-cream text-left transition-colors group"
-                                    >
-                                        <BookOpen size={18} className="text-mystic-indigo group-hover:text-vibrant-orange" />
-                                        <span className="text-sm font-medium text-cosmic-blue">My Learning</span>
-                                    </button>
-
-                                    <button 
-                                        onClick={() => { setIsProfileOpen(false); }}
-                                        className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-sacred-cream text-left transition-colors group"
-                                    >
-                                        <Settings size={18} className="text-mystic-indigo group-hover:text-vibrant-orange" />
-                                        <span className="text-sm font-medium text-cosmic-blue">Settings</span>
-                                    </button>
-                                </div>
-                                <div className="p-2 border-t border-earth-beige/30">
-                                    <button 
-                                        onClick={() => { onLogout(); setIsProfileOpen(false); }}
-                                        className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-rich-crimson/5 text-left transition-colors group"
-                                    >
-                                        <LogOut size={18} className="text-rich-crimson group-hover:scale-110 transition-transform" />
-                                        <span className="text-sm font-bold text-rich-crimson">Sign Out</span>
-                                    </button>
-                                </div>
+                            <div className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-earth-beige/20 overflow-hidden py-2 animate-fade-in-up">
+                                <button onClick={() => { onNavigate('dashboard'); setIsProfileOpen(false); }} className="w-full text-left px-5 py-3 hover:bg-sacred-cream flex items-center gap-3 text-sm text-cosmic-blue font-medium transition-colors">
+                                    <LayoutDashboard size={16} className="text-aura-gold" /> Dashboard
+                                </button>
+                                <button onClick={() => { onNavigate('lms'); setIsProfileOpen(false); }} className="w-full text-left px-5 py-3 hover:bg-sacred-cream flex items-center gap-3 text-sm text-cosmic-blue font-medium transition-colors">
+                                    <BookOpen size={16} className="text-aura-gold" /> My Learning
+                                </button>
+                                <div className="h-px bg-earth-beige/20 my-1 mx-4"></div>
+                                <button onClick={() => { onLogout(); setIsProfileOpen(false); }} className="w-full text-left px-5 py-3 hover:bg-red-50 flex items-center gap-3 text-sm text-rich-crimson font-medium transition-colors">
+                                    <LogOut size={16} /> Logout
+                                </button>
                             </div>
                         )}
                     </div>
-                  ) : (
+                ) : (
                     <button 
                         onClick={() => onAuthNavigate('login')}
-                        className="flex items-center space-x-2 font-display text-sm font-bold uppercase tracking-wider text-cosmic-blue hover:text-vibrant-orange transition-colors"
+                        className="px-6 py-2.5 bg-cosmic-blue text-white text-xs font-bold uppercase tracking-widest rounded-lg hover:bg-rich-crimson shadow-[0_4px_14px_0_rgba(0,0,0,0.2)] hover:shadow-lg transition-all"
                     >
-                        <UserIcon size={18} />
-                        <span>Login</span>
+                        Login
                     </button>
-                  )}
-              </div>
+                )}
             </div>
 
-            {/* Mobile Actions & Menu Button - Visible below XL */}
-            <div className="xl:hidden flex items-center space-x-4 relative z-50">
-              {/* Cart Icon Mobile - ONLY VISIBLE IF LOGGED IN */}
-              {user && (
-                <button 
-                    onClick={() => { onNavigate('cart'); setIsOpen(false); }}
-                    className="relative p-2 text-cosmic-blue"
-                    >
-                        <ShoppingCart size={24} />
-                        {cartCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-rich-crimson text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                                {cartCount}
-                            </span>
-                        )}
+            {/* Mobile Menu Button */}
+            <div className="lg:hidden flex items-center gap-4 relative z-50">
+               <button 
+                  onClick={() => onNavigate('cart')}
+                  className="relative p-2"
+                >
+                    <ShoppingCart className="w-6 h-6 text-cosmic-blue" />
+                    {cartCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-rich-crimson text-white text-[9px] font-bold flex items-center justify-center rounded-full">
+                            {cartCount}
+                        </span>
+                    )}
                 </button>
-              )}
-              <button onClick={() => setIsOpen(!isOpen)} className="text-cosmic-blue hover:text-vibrant-orange transition-colors p-2">
-                {isOpen ? <X size={28} /> : <Menu size={28} />}
-              </button>
+                <button 
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="p-2 text-cosmic-blue hover:text-rich-crimson transition-colors"
+                >
+                    {isOpen ? <X size={28} /> : <Menu size={28} />}
+                </button>
             </div>
+
           </div>
         </div>
       </nav>
 
-      {/* Mobile Nav Overlay */}
-      {isOpen && (
-        <div className="xl:hidden fixed inset-0 z-40 bg-background/98 backdrop-blur-xl flex flex-col pt-28 px-6 pb-10 animate-fade-in overflow-y-auto">
-          <div className="flex flex-col space-y-2 flex-grow">
-            {navLinks.map((link) => (
-              <button 
-                key={link.name} 
-                onClick={() => { link.action(); setIsOpen(false); }}
-                className={`text-left font-display text-3xl py-4 border-b border-earth-beige/20 transition-colors ${currentView === link.id ? 'text-vibrant-orange' : 'text-cosmic-blue hover:text-rich-crimson'}`}
-              >
-                {link.name}
-              </button>
-            ))}
-          </div>
-          
-          <div className="mt-8 space-y-4">
-            {user ? (
-              <div className="bg-sacred-cream/50 p-6 rounded-2xl border border-earth-beige/30">
-                <div className="flex items-center gap-3 mb-4">
-                   <div className="w-10 h-10 rounded-full bg-aura-gold flex items-center justify-center text-cosmic-blue font-bold">
-                     {user.fullName.charAt(0)}
-                   </div>
-                   <div>
-                     <p className="font-bold text-cosmic-blue">{user.fullName}</p>
-                     <p className="text-xs text-mystic-indigo">{user.email}</p>
-                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                    <button 
-                      onClick={() => { onNavigate('dashboard'); setIsOpen(false); }}
-                      className="flex flex-col items-center justify-center space-y-1 bg-white p-3 rounded-xl border border-earth-beige/20"
-                    >
-                        <LayoutDashboard size={20} className="text-cosmic-blue" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-cosmic-blue">Dashboard</span>
-                    </button>
-                    <button 
-                      onClick={() => { onNavigate('lms'); setIsOpen(false); }}
-                      className="flex flex-col items-center justify-center space-y-1 bg-white p-3 rounded-xl border border-earth-beige/20"
-                    >
-                        <BookOpen size={20} className="text-cosmic-blue" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-cosmic-blue">Learning</span>
-                    </button>
-                </div>
-                
-                <button 
-                  onClick={() => { onLogout(); setIsOpen(false); }}
-                  className="w-full flex items-center justify-center space-x-2 font-sans text-sm text-rich-crimson font-semibold py-2 border-t border-earth-beige/20 mt-2"
+      {/* Mobile Menu Overlay */}
+      <div className={`fixed inset-0 bg-background/98 backdrop-blur-xl z-40 transition-transform duration-500 lg:hidden flex flex-col pt-24 px-8 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+          <div className="flex flex-col space-y-6">
+              {navLinks.map((link) => (
+                <button
+                  key={link.name}
+                  onClick={() => { link.action(); setIsOpen(false); }}
+                  className={`text-2xl font-display text-left ${currentView === link.id ? 'text-rich-crimson' : 'text-cosmic-blue'}`}
                 >
-                    <LogOut size={16} />
-                    <span>Sign Out</span>
+                  {link.name}
                 </button>
-              </div>
-            ) : (
-              <button 
-                onClick={() => { onAuthNavigate('login'); setIsOpen(false); }}
-                className="w-full flex items-center justify-center space-x-2 font-display text-lg font-bold uppercase tracking-widest bg-cosmic-blue text-white py-4 rounded-xl shadow-lg"
-              >
-                  <UserIcon size={20} />
-                  <span>Login / Sign Up</span>
-              </button>
-            )}
-            
-            <p className="text-center text-[10px] uppercase tracking-widest text-mystic-indigo/30 pt-4">
-              &copy; Digital Vastu
-            </p>
+              ))}
+              
+              <div className="h-px bg-earth-beige/20 w-full my-4"></div>
+
+              {user ? (
+                  <div className="space-y-4">
+                      <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 rounded-full bg-sacred-cream flex items-center justify-center text-aura-gold">
+                                <UserIcon size={20} />
+                          </div>
+                          <div>
+                              <p className="font-display text-lg text-cosmic-blue">{user.fullName}</p>
+                              <p className="text-xs text-slate-500 uppercase tracking-widest">Logged In</p>
+                          </div>
+                      </div>
+                      <button onClick={() => { onNavigate('dashboard'); setIsOpen(false); }} className="w-full py-4 rounded-xl bg-sacred-cream text-cosmic-blue font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2">
+                          <LayoutDashboard size={18} /> Dashboard
+                      </button>
+                      <button onClick={() => { onLogout(); setIsOpen(false); }} className="w-full py-4 rounded-xl border border-rich-crimson/20 text-rich-crimson font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2">
+                          <LogOut size={18} /> Logout
+                      </button>
+                  </div>
+              ) : (
+                  <button 
+                    onClick={() => { onAuthNavigate('login'); setIsOpen(false); }}
+                    className="w-full py-4 bg-cosmic-blue text-white text-sm font-bold uppercase tracking-widest rounded-xl shadow-lg"
+                  >
+                    Login / Sign Up
+                  </button>
+              )}
           </div>
-        </div>
-      )}
+      </div>
     </>
   );
 };

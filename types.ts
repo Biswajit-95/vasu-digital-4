@@ -1,5 +1,4 @@
 
-
 import { LucideIcon } from "lucide-react";
 
 export interface Service {
@@ -31,7 +30,74 @@ export interface PricingPlan {
 export type AuthView = 'login' | 'signup';
 export type PageView = 'home' | 'consultation' | 'dashboard' | 'shop' | 'faq' | 'auth' | 'lms' | 'product-detail' | 'cart' | 'contact' | 'services' | 'service-detail';
 
-// --- NEW STRICT LMS TYPES START ---
+export interface User {
+  id: string;
+  fullName: string;
+  email: string;
+}
+
+export interface DigitalProduct {
+  id: string;
+  title: string;
+  description: string;
+  fileUrl?: string;
+  thumbnailUrl: string;
+  previewUrl?: string;
+  isPaid: boolean;
+  priceInINR: number;
+  priceInAED: number;
+  currency?: string;
+  type?: string;
+  purchaseDate?: string;
+}
+
+export interface CartItem {
+  id: string;
+  type: 'product' | 'consultation';
+  product?: DigitalProduct;
+  consultation?: {
+      plan: PricingPlan;
+      bookingType: 'online' | 'onsite';
+  };
+  quantity: number;
+}
+
+export interface Booking {
+    id: string;
+    type: string;
+    tier: string;
+    status: string;
+    date: string;
+    amount: string;
+}
+
+export interface Course {
+    id: string;
+    title: string;
+    mentor: string;
+    progress: number;
+    thumbnail: string;
+    lessons: number;
+    enrolledDate: string;
+    modules: any[];
+    priceInINR: number;
+    priceInAED: number;
+}
+
+export interface ConsultationResumeData {
+    plan: PricingPlan;
+    bookingType: 'online' | 'onsite';
+}
+
+export interface ServiceArticle {
+    id: string;
+    title: string;
+    shortDescription: string;
+    fullDescription: string;
+    imageUrl: string;
+}
+
+// --- NEW STRICT LMS TYPES ---
 
 export interface Subtopic {
   id: string;
@@ -44,6 +110,7 @@ export interface Subtopic {
   watched: boolean;
   createdAt: string;
   updatedAt: string;
+  isPreview?: boolean; // New field to allow previewing specific lessons
 }
 
 export interface Topic {
@@ -62,7 +129,6 @@ export interface CourseCategory {
   description: string;
   createdAt: string;
   updatedAt: string;
-  subtopics?: any; // loose typing for backward compat if needed
 }
 
 export interface CourseStats {
@@ -83,75 +149,5 @@ export interface LMSCourse {
   category: CourseCategory;
   stats: CourseStats;
   topics: Topic[];
-}
-
-// --- NEW LMS TYPES END ---
-
-// Legacy Course type kept for compatibility with existing dashboard mock data if needed
-export interface Course {
-  id: string;
-  title: string;
-  mentor: string;
-  progress: number;
-  thumbnail: string;
-  lessons: number;
-  enrolledDate: string;
-  modules: { title: string; duration: string }[];
-  priceInINR?: number;
-  priceInAED?: number;
-}
-
-export interface Booking {
-  id: string;
-  type: 'online' | 'onsite';
-  tier: 'prana' | 'moksha';
-  status: 'pending_review' | 'confirmed' | 'payment_pending' | 'completed';
-  date: string;
-  amount: string;
-}
-
-export interface DigitalProduct {
-  id: string;
-  title: string;
-  description: string;
-  fileUrl: string;
-  thumbnailUrl: string;
-  previewUrl: string;
-  isPaid: boolean;
-  priceInINR: number;
-  priceInAED: number | null;
-  currency: "INR" | "AED";
-}
-
-export interface ConsultationItem {
-    plan: PricingPlan;
-    bookingType: 'online' | 'onsite';
-}
-
-export interface CartItem {
-  id: string;
-  type: 'product' | 'consultation';
-  product?: DigitalProduct;
-  consultation?: ConsultationItem;
-  quantity: number;
-}
-
-export interface ConsultationResumeData {
-    plan: PricingPlan;
-    bookingType: 'online' | 'onsite';
-}
-
-export interface User {
-  id: string;
-  fullName: string;
-  email: string;
-  avatar?: string;
-}
-
-export interface ServiceArticle {
-  id: string;
-  title: string;
-  shortDescription: string;
-  fullDescription?: string; // Content placeholder
-  imageUrl: string;
+  isEnrolled?: boolean; // New field to track ownership
 }
